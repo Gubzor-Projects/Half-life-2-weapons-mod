@@ -1,0 +1,27 @@
+{
+  "Name": "[UM&P] Half Life 2 Guns Mod",
+  "Author": "Um, Idk & Kubaadamiec",
+  "Description": "Adds weapons from half-life 2 with accurate sound effects, ammo system, and abilities.",
+  "ModVersion": "1.0",
+  "GameVersion": "1.27+",
+  "ThumbnailPath": "Thumbnail.png",
+  "EntryPoint": "Mod.Mod",
+  "Tags": [],
+  "Scripts": [
+    "Code/script.cs",
+    "Code/UmAPI.cs",
+    "Code/CustomRPG.cs",
+    "Code/CustomRocketLogic.cs",
+    "Code/AltFireBehaviour.cs",
+    "Code/ModdedBlasterBehaviour.cs",
+    "Code/GravityGunBehaviour.cs",
+    "Code/MPWAPI.cs",
+    "Code/StunstickBehaviour.cs",
+    "Code/Crossbow.cs",
+    "Code/GrenadeFuse.cs",
+    "Code/AmmoBehaviour.cs"
+  ],
+  "Active": true,
+  "UGCIdentity": null,
+  "CreatorUGCIdentity": "3154271999"
+}
