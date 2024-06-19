@@ -638,7 +638,7 @@ namespace Mod
                         RPGBehaviour.RotationSpeed = 60f;
 
                         LineRenderer lineRenderer = Instance.AddComponent<LineRenderer>();
-                        lineRenderer.material = Instantiate<Material>(ModAPI.FindMaterial("VeryBright"));
+                        lineRenderer.material = ModAPI.FindMaterial("VeryBright");
                         lineRenderer.material.mainTexture = ModAPI.LoadTexture("Sprites/RPG Line.png");
                         lineRenderer.startColor = new Color(1f, 0.2f, 0.2f, 0.05f);
                         lineRenderer.endColor = new Color(1f, 0.2f, 0.2f, 0.05f);
@@ -650,6 +650,58 @@ namespace Mod
                         AmmoBehaviour ammoBehaviour = Instance.GetOrAddComponent<AmmoBehaviour>();
                         ammoBehaviour.Ammo = 1;
                         ammoBehaviour.MaxAdditionalAmmo = 2;
+                        ammoBehaviour.ReloadClip = ModAPI.LoadSound("SFX/smg1_reload.wav");
+                    }
+                }
+            );
+            #endregion
+            #region AR3
+            ModAPI.Register(
+                new Modification()
+                {
+                    OriginalItem = ModAPI.FindSpawnable("Rod"),
+                    NameOverride = "Emplacement Gun (AR3)" + ModTag,
+                    NameToOrderByOverride = "Z",
+                    DescriptionOverride = "The Emplacement Gun, also known as the Mounted Gun, is a mounted pulse gun manufactured by the Combine. It is similar to the Overwatch Standard Issue Pulse Rifle, except that it cannot be removed from its mount, shoots at a faster rate and does not fire Energy Balls.",
+                    CategoryOverride = ModAPI.FindCategory("Half Life 2 Weapons Mod"),
+                    ThumbnailOverride = ModAPI.LoadSprite("Thumbnails/Emplacement Gun.png", 5f),
+                    AfterSpawn = (Instance) =>
+                    {
+                        Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Sprites/Emplacement Gun.png");
+                        Instance.FixColliders();
+
+                        PhysicalBehaviour physicalBehaviour = Instance.GetComponent<PhysicalBehaviour>();
+                        physicalBehaviour.HoldingPositions = new Vector3[]
+                        {
+                            new Vector3(-0.1449f, -0.1007f),
+                            new Vector3(0.1168f, -0.1015f),
+                        };
+
+                        ModdedBlasterBehaviour firearmBehaviour = Instance.GetOrAddComponent<ModdedBlasterBehaviour>();
+                        firearmBehaviour.barrelPosition = new Vector3(0.877f, 0.042f);
+                        firearmBehaviour.Interval = 0.06f;
+                        firearmBehaviour.Automatic = true;
+                        firearmBehaviour.BlasterColor = new Color(0.3254717f, 0.9727463f, 1f, 1f);
+                        firearmBehaviour.BlasterBoltColor = new Color(0.3254717f, 0.9727463f, 1f, 1f);
+                        firearmBehaviour.BoltAlpha = 1f;
+                        firearmBehaviour.CustomBoltTexture = ModAPI.LoadTexture("Sprites/HDparticle.png");
+                        firearmBehaviour.BoltDamage = 15f;
+                        firearmBehaviour.BoltSpeed = 70;
+                        firearmBehaviour.BoltThickness = 0.4f;
+                        firearmBehaviour.BoltTrailLifetime = 0.05f;
+                        firearmBehaviour.BoltGlows = true;
+                        firearmBehaviour.InaccuracyMultiplier = 0.02f;
+                        firearmBehaviour.MuzzleFlashSize = 1.1f;
+                        firearmBehaviour.Recoil = 0.7f;
+                        firearmBehaviour.Clips = new AudioClip[]
+                        {
+                            ModAPI.LoadSound("SFX/ar1_dist1.wav"),
+                            ModAPI.LoadSound("SFX/ar1_dist2.wav"),
+                        };
+
+                        AmmoBehaviour ammoBehaviour = Instance.GetOrAddComponent<AmmoBehaviour>();
+                        ammoBehaviour.Ammo = 3000000;
+                        ammoBehaviour.MaxAdditionalAmmo = 60000000;
                         ammoBehaviour.ReloadClip = ModAPI.LoadSound("SFX/smg1_reload.wav");
                     }
                 }
