@@ -7,7 +7,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using UmmAPI;
-using Newtonsoft.Json.Linq;
 using UnityEngine.Animations;
 
 public class CustomRPG : MonoBehaviour
