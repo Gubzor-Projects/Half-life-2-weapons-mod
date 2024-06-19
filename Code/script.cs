@@ -364,6 +364,100 @@ namespace Mod
                 }
             );
             #endregion
+            #region OICW
+            ModAPI.Register(
+                new Modification()
+                {
+                    OriginalItem = ModAPI.FindSpawnable("Pistol"),
+                    NameOverride = "OICW" + ModTag,
+                    NameToOrderByOverride = "Z",
+                    DescriptionOverride = "OICW, is a weapon cut from Half-Life 2. It can be found in the playable Half-Life 2 Beta.",
+                    CategoryOverride = ModAPI.FindCategory("Half Life 2 Weapons Mod"),
+                    ThumbnailOverride = ModAPI.LoadSprite("Thumbnails/OICW.png", 5f),
+                    AfterSpawn = (Instance) =>
+                    {
+                        Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Sprites/OICW.png");
+                        Instance.FixColliders();
+
+                        PhysicalBehaviour physicalBehaviour = Instance.GetComponent<PhysicalBehaviour>();
+                        physicalBehaviour.HoldingPositions = new Vector3[]
+                        {
+                            new Vector3(-0.202f, -0.091f),
+                            new Vector3(0.256f, -0.034f),
+                        };
+
+                        FirearmBehaviour firearmBehaviour = Instance.GetComponent<FirearmBehaviour>();
+                        firearmBehaviour.ShotSounds = new AudioClip[]
+                        {
+                            ModAPI.LoadSound("SFX/OICW_1.wav"),
+                        };
+                        firearmBehaviour.barrelPosition = new Vector2(0.661f, 0.002f);
+                        firearmBehaviour.Automatic = true;
+                        firearmBehaviour.InitialInaccuracy = 0.02f;
+                        firearmBehaviour.AutomaticFireInterval = 0.1f;
+
+                        Cartridge customCartrige = ModAPI.FindCartridge("9mm");
+                        customCartrige.Damage = 8f;
+
+                        firearmBehaviour.Cartridge = customCartrige;
+
+                        Material casingMaterial = Resources.Load<GameObject>("Prefabs/BulletCasing").GetComponent<ParticleSystemRenderer>().sharedMaterial;
+                        Texture2D casingSprite = ModAPI.LoadTexture("Sprites/5.56mm casing.png");
+                        Instance.transform.Find("BulletCasing(Clone)").GetComponent<ParticleSystemRenderer>().sharedMaterial = Instantiate<Material>(casingMaterial);
+                        Instance.transform.Find("BulletCasing(Clone)").GetComponent<ParticleSystemRenderer>().sharedMaterial.mainTexture = casingSprite;
+                        Instance.transform.Find("BulletCasing(Clone)").GetComponent<ParticleSystem>().startSize = 5 * ModAPI.PixelSize;
+
+                        AmmoBehaviour ammoBehaviour = Instance.GetOrAddComponent<AmmoBehaviour>();
+                        ammoBehaviour.Ammo = 30;
+                        ammoBehaviour.MaxAdditionalAmmo = 150;
+                        ammoBehaviour.ReloadClip = ModAPI.LoadSound("SFX/OICW_Reload.wav");
+
+                        Sprite GrenadeSprite = ModAPI.LoadSprite("Sprites/SMG1 Grenade.png");
+
+                        AudioSource SoundSource;
+                        SoundSource = Instance.AddComponent<AudioSource>();
+                        SoundSource.dopplerLevel = 0f;
+                        SoundSource.playOnAwake = false;
+                        SoundSource.rolloffMode = AudioRolloffMode.Linear;
+                        SoundSource.minDistance = 1f;
+                        SoundSource.maxDistance = 25f;
+                        SoundSource.spatialBlend = 1f;
+                        SoundSource.volume = 1;
+                        SoundSource.clip = ModAPI.LoadSound("SFX/OICW_Alt.wav");
+
+                        AltFireBehaviour AltFire = Instance.GetOrAddComponent<AltFireBehaviour>();
+                        AltFire.OnActivation = new UnityEvent();
+                        AltFire.OnActivation.AddListener(() =>
+                        {
+                            #region Grenade
+                            Vector2 barrelDirection = new Vector2(1, 0);
+                            float ShootForce = 0.5f;
+                            Vector2 GetBarrelDirection()
+                            {
+                                return Instance.transform.TransformDirection(barrelDirection) * Instance.transform.localScale.x;
+                            }
+                            SoundSource.Play();
+                            GameObject Grenade = Instantiate<GameObject>(ModAPI.FindSpawnable("Handgrenade").Prefab, Instance.transform.position, Instance.transform.rotation);
+                            Grenade.transform.SetParent(Instance.transform);
+                            Grenade.transform.localPosition = new Vector2(0.661f, 0.002f);
+                            Grenade.transform.localScale = Vector3.one;
+                            Grenade.transform.localRotation = Quaternion.identity;
+                            Grenade.transform.SetParent(null);
+                            Grenade.GetComponent<SpriteRenderer>().sprite = GrenadeSprite;
+                            Grenade.GetComponent<Rigidbody2D>().AddForce(GetBarrelDirection() * ShootForce, ForceMode2D.Impulse);
+                            Grenade.GetComponent<PhysicalBehaviour>().SpawnSpawnParticles = false;
+                            Grenade.FixColliders();
+                            Grenade.GetComponent<ExplosiveBehaviour>().ImpactForceThreshold = 0;
+                            Grenade.GetComponent<ExplosiveBehaviour>().Delay = 0;
+                            Instance.transform.Find("MuzzleSmoke(Clone)").GetComponent<ParticleSystem>().Play();
+                            Destroy(Grenade.transform.Find("HandgrenadePin").gameObject);
+                            Destroy(Grenade.transform.Find("HandgrenadeLever").gameObject);
+                            #endregion
+                        });
+                    }
+                }
+            );
+            #endregion
             #region Spas 12
             ModAPI.Register(
                 new Modification()
@@ -673,8 +767,7 @@ namespace Mod
                         PhysicalBehaviour physicalBehaviour = Instance.GetComponent<PhysicalBehaviour>();
                         physicalBehaviour.HoldingPositions = new Vector3[]
                         {
-                            new Vector3(-0.1449f, -0.1007f),
-                            new Vector3(0.1168f, -0.1015f),
+                            new Vector3(-0.848f, -0.028f)
                         };
 
                         ModdedBlasterBehaviour firearmBehaviour = Instance.GetOrAddComponent<ModdedBlasterBehaviour>();
@@ -692,7 +785,7 @@ namespace Mod
                         firearmBehaviour.BoltGlows = true;
                         firearmBehaviour.InaccuracyMultiplier = 0.02f;
                         firearmBehaviour.MuzzleFlashSize = 1.1f;
-                        firearmBehaviour.Recoil = 0.7f;
+                        firearmBehaviour.Recoil = 0.4f;
                         firearmBehaviour.Clips = new AudioClip[]
                         {
                             ModAPI.LoadSound("SFX/ar1_dist1.wav"),
@@ -702,6 +795,57 @@ namespace Mod
                         AmmoBehaviour ammoBehaviour = Instance.GetOrAddComponent<AmmoBehaviour>();
                         ammoBehaviour.Ammo = 3000000;
                         ammoBehaviour.MaxAdditionalAmmo = 60000000;
+                        ammoBehaviour.ReloadClip = ModAPI.LoadSound("SFX/smg1_reload.wav");
+                    }
+                }
+            );
+            #endregion
+            #region Overwatch Sniper Rifle
+            ModAPI.Register(
+                new Modification()
+                {
+                    OriginalItem = ModAPI.FindSpawnable("Rod"),
+                    NameOverride = "Overwatch Sniper Rifle" + ModTag,
+                    NameToOrderByOverride = "Z",
+                    DescriptionOverride = "The Overwatch Sniper Rifle is a pulse rifle identifiable by its signature blue laser sight, Overwatch Snipers use them to guard key areas.",
+                    CategoryOverride = ModAPI.FindCategory("Half Life 2 Weapons Mod"),
+                    ThumbnailOverride = ModAPI.LoadSprite("Thumbnails/Combine Sniper Rifle.png", 5f),
+                    AfterSpawn = (Instance) =>
+                    {
+                        Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Sprites/Combine Sniper Rifle.png");
+                        Instance.FixColliders();
+
+                        PhysicalBehaviour physicalBehaviour = Instance.GetComponent<PhysicalBehaviour>();
+                        physicalBehaviour.HoldingPositions = new Vector3[]
+                        {
+                            new Vector3(-0.558f, -0.152f),
+                            new Vector3(-0.15f, -0.122f),
+                        };
+
+                        ModdedBlasterBehaviour firearmBehaviour = Instance.GetOrAddComponent<ModdedBlasterBehaviour>();
+                        firearmBehaviour.barrelPosition = new Vector3(0.966f, 0.07f);
+                        firearmBehaviour.Automatic = false;
+                        firearmBehaviour.BlasterColor = new Color(0.3254717f, 0.9727463f, 1f, 1f);
+                        firearmBehaviour.BlasterBoltColor = new Color(0.3254717f, 0.9727463f, 1f, 1f);
+                        firearmBehaviour.BoltAlpha = 1f;
+                        firearmBehaviour.CustomBoltTexture = ModAPI.LoadTexture("Sprites/HDparticle.png");
+                        firearmBehaviour.BoltDamage = 175f;
+                        firearmBehaviour.BoltSpeed = 200;
+                        firearmBehaviour.BoltThickness = 0.5f;
+                        firearmBehaviour.BoltTrailLifetime = 0.03f;
+                        firearmBehaviour.BoltGlows = true;
+                        firearmBehaviour.InaccuracyMultiplier = 0f;
+                        firearmBehaviour.MuzzleFlashSize = 2f;
+                        firearmBehaviour.Recoil = 2f;
+                        firearmBehaviour.Clips = new AudioClip[]
+                        {
+                            ModAPI.LoadSound("SFX/ar1_dist1.wav"),
+                            ModAPI.LoadSound("SFX/ar1_dist2.wav"),
+                        };
+
+                        AmmoBehaviour ammoBehaviour = Instance.GetOrAddComponent<AmmoBehaviour>();
+                        ammoBehaviour.Ammo = 1;
+                        ammoBehaviour.MaxAdditionalAmmo = 1;
                         ammoBehaviour.ReloadClip = ModAPI.LoadSound("SFX/smg1_reload.wav");
                     }
                 }
