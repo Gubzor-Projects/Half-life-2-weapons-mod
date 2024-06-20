@@ -955,6 +955,63 @@ namespace Mod
                 }
             );
             #endregion
+            #region Sniper Rifle
+            ModAPI.Register(
+                new Modification()
+                {
+                    OriginalItem = ModAPI.FindSpawnable("Pistol"),
+                    NameOverride = "Sniper Rifle" + ModTag,
+                    NameToOrderByOverride = "Z",
+                    DescriptionOverride = "The Sniper Rifle is a weapon cut from Half-Life 2. It can be found in the playable Half-Life 2 Beta.",
+                    CategoryOverride = ModAPI.FindCategory("Half Life 2 Weapons Mod"),
+                    ThumbnailOverride = ModAPI.LoadSprite("Thumbnails/Sniper Rifle.png", 5f),
+                    AfterSpawn = (Instance) =>
+                    {
+                        ModAPI.KeepExtraObjects();
+                        Instance.transform.Find("Slide").GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Sprites/Sniper Rifle Slide.png");
+                        UmAPI.SetSlideLength(Instance.transform.GetChild(0), 7f);
+                        UmAPI.SetSlideDuration(Instance.transform.GetChild(0), 0.5f);
+                        UmAPI.OffsetSlide(Instance, Instance.transform.GetChild(0), 0f, -3f);
+                        Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Sprites/Sniper Rifle.png");
+                        Instance.FixColliders();
+
+                        PhysicalBehaviour physicalBehaviour = Instance.GetComponent<PhysicalBehaviour>();
+                        physicalBehaviour.HoldingPositions = new Vector3[]
+                        {
+                            new Vector3(-0.356f, -0.142f),
+                            new Vector3(0.08f, -0.1f),
+                        };
+
+                        FirearmBehaviour firearmBehaviour = Instance.GetComponent<FirearmBehaviour>();
+                        firearmBehaviour.ShotSounds = new AudioClip[]
+                        {
+                            ModAPI.LoadSound("SFX/SniperRifle_1.wav"),
+                        };
+                        firearmBehaviour.barrelPosition = new Vector2(1.121f, 0.043f);
+                        firearmBehaviour.InitialInaccuracy = 0f;
+                        firearmBehaviour.casingPosition = new Vector2(-0.955f, 0.039f);
+    
+
+                        Cartridge customCartrige = ModAPI.FindCartridge("50 BMG");
+                        customCartrige.Damage = 50f;
+
+                        firearmBehaviour.Cartridge = customCartrige;
+
+                        Material casingMaterial = Resources.Load<GameObject>("Prefabs/BulletCasing").GetComponent<ParticleSystemRenderer>().sharedMaterial;
+                        Texture2D casingSprite = ModAPI.LoadTexture("Sprites/50bmg casing.png");
+                        Instance.transform.Find("BulletCasing(Clone)").GetComponent<ParticleSystemRenderer>().sharedMaterial = Instantiate<Material>(casingMaterial);
+                        Instance.transform.Find("BulletCasing(Clone)").GetComponent<ParticleSystemRenderer>().sharedMaterial.mainTexture = casingSprite;
+                        Instance.transform.Find("BulletCasing(Clone)").GetComponent<ParticleSystem>().startSize = 8 * ModAPI.PixelSize;
+                        Instance.transform.Find("BulletCasing(Clone)").localPosition = new Vector2(-0.955f, 0.039f); 
+
+                        AmmoBehaviour ammoBehaviour = Instance.GetOrAddComponent<AmmoBehaviour>();
+                        ammoBehaviour.Ammo = 1;
+                        ammoBehaviour.MaxAdditionalAmmo = 30;
+                        ammoBehaviour.ReloadClip = ModAPI.LoadSound("SFX/SniperRifle_Reload.wav");
+                    }
+                }
+            );
+            #endregion
             #endregion
         }
     }
