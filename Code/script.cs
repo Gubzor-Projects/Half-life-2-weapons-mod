@@ -757,7 +757,7 @@ namespace Mod
                 }
             );
             #endregion
-            #region SMG
+            #region MP5
             ModAPI.Register(
                 new Modification()
                 {
@@ -803,6 +803,58 @@ namespace Mod
 
                         AmmoBehaviour ammoBehaviour = Instance.GetOrAddComponent<AmmoBehaviour>();
                         ammoBehaviour.Ammo = 30;
+                        ammoBehaviour.MaxAdditionalAmmo = 150;
+                        ammoBehaviour.ReloadClip = ModAPI.LoadSound("SFX/smg1_reload.wav");
+                    }
+                }
+            );
+            #endregion
+            #region MP7
+            ModAPI.Register(
+                new Modification()
+                {
+                    OriginalItem = ModAPI.FindSpawnable("Pistol"),
+                    NameOverride = "MP7" + ModTag,
+                    NameToOrderByOverride = "Z",
+                    DescriptionOverride = "The Heckler & Koch MP7, also known as SMG2, is a weapon cut from Half-Life 2. It can be found in the playable Half-Life 2 Beta.",
+                    CategoryOverride = ModAPI.FindCategory("Half Life 2 Weapons Mod"),
+                    ThumbnailOverride = ModAPI.LoadSprite("Thumbnails/MP7.png", 5f),
+                    AfterSpawn = (Instance) =>
+                    {
+                        Instance.GetComponent<SpriteRenderer>().sprite = ModAPI.LoadSprite("Sprites/MP7.png");
+                        Instance.FixColliders();
+
+                        PhysicalBehaviour physicalBehaviour = Instance.GetComponent<PhysicalBehaviour>();
+                        physicalBehaviour.HoldingPositions = new Vector3[]
+                        {
+                            new Vector3(-0.157f, -0.106f),
+                            new Vector3(0.241f, -0.106f),
+                        };
+
+                        FirearmBehaviour firearmBehaviour = Instance.GetComponent<FirearmBehaviour>();
+                        firearmBehaviour.ShotSounds = new AudioClip[]
+                        {
+                            ModAPI.LoadSound("SFX/smg1_fire1.wav"),
+                        };
+                        firearmBehaviour.barrelPosition = new Vector2(0.376f, 0.032f);
+                        firearmBehaviour.Automatic = false;
+                        firearmBehaviour.InitialInaccuracy = 0.07f;
+                        BurstFireAdapter BFA = Instance.GetOrAddComponent<BurstFireAdapter>();
+                        BFA.Interval = 0.06f;
+
+                        Cartridge customCartrige = ModAPI.FindCartridge("9mm");
+                        customCartrige.Damage = 5f;
+
+                        firearmBehaviour.Cartridge = customCartrige;
+
+                        Material casingMaterial = Resources.Load<GameObject>("Prefabs/BulletCasing").GetComponent<ParticleSystemRenderer>().sharedMaterial;
+                        Texture2D casingSprite = ModAPI.LoadTexture("Sprites/9mm casing.png");
+                        Instance.transform.Find("BulletCasing(Clone)").GetComponent<ParticleSystemRenderer>().sharedMaterial = Instantiate<Material>(casingMaterial);
+                        Instance.transform.Find("BulletCasing(Clone)").GetComponent<ParticleSystemRenderer>().sharedMaterial.mainTexture = casingSprite;
+                        Instance.transform.Find("BulletCasing(Clone)").GetComponent<ParticleSystem>().startSize = 5 * ModAPI.PixelSize;
+
+                        AmmoBehaviour ammoBehaviour = Instance.GetOrAddComponent<AmmoBehaviour>();
+                        ammoBehaviour.Ammo = 60;
                         ammoBehaviour.MaxAdditionalAmmo = 150;
                         ammoBehaviour.ReloadClip = ModAPI.LoadSound("SFX/smg1_reload.wav");
                     }
